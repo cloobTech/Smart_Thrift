@@ -1,19 +1,21 @@
 #!/usr/bin/python3
-from models import base_model
+from models import base_model, user
 from datetime import datetime
+from utils import hash_password
 
 base = base_model.BaseModel()
-base3 = base_model.Base()
+user1 = user.User()
 # format for datetime
 time_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 dict = {
-    "id": "123",
-    "created_at": "2021-06-28T16:30:40.100000",
-    "updated_at": "2021-06-28T16:30:00.000000",
-    "name": "Holberton"
+    "first_name": "Olamide",
+    "last_name": "Bello",
+    "email": "cloobtech@gmail.com",
+    "password": "123456"
 }
 
-base2 = base_model.BaseModel(**dict)
+user2 = user.User(**dict)
 
-print(base.to_dict())
+print(user2.to_dict())
+print(hash_password(dict['password']))
