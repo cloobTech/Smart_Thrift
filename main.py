@@ -1,21 +1,25 @@
 #!/usr/bin/python3
-from models import base_model, user
+from models import base_model, loan_out, user, contribution
 from datetime import datetime
 from utils import hash_password
 
-base = base_model.BaseModel()
-user1 = user.User()
-# format for datetime
-time_format = "%Y-%m-%dT%H:%M:%S.%f"
 
-dict = {
-    "first_name": "Olamide",
-    "last_name": "Bello",
-    "email": "cloobtech@gmail.com",
-    "password": "123456"
+dict1 = {
+    "first_name": "ola",
+    "last_name": "bello",
+    "is_member": True,
+    "amount": 50000
+}
+dict2 = {
+    "first_name": "ola",
+    "last_name": "bello",
+    "is_member": False,
+    "amount": 50000
 }
 
-user2 = user.User(**dict)
 
-print(user2.to_dict())
-print(hash_password(dict['password']))
+loan1 =  loan_out.LoanOut(**dict1)
+loan2 =  loan_out.LoanOut(**dict2)
+
+print(loan1.to_dict())
+print(loan2.to_dict())
