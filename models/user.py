@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" User Class for Project """
+""" User Model for Project """
 from models.base_model import BaseModel, Base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -10,18 +10,20 @@ from utils import hash_password
 class User(BaseModel, Base):
     """ User Class """
     __tablename__ = "users"
-    email: Mapped[str] = mapped_column(String(60), nullable=False)
-    password: Mapped[str] = mapped_column(String(60), nullable=False)
+
+    email: Mapped[str] = mapped_column(String(60), nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(
+        String(60), nullable=False)
     first_name: Mapped[str] = mapped_column(String(60), nullable=False)
     last_name: Mapped[str] = mapped_column(String(60), nullable=False)
-    role: Mapped[str] = mapped_column(String(60), nullable=False, default='member')
+    role: Mapped[str] = mapped_column(
+        String(60), nullable=False, default='member')
     slot: Mapped[int] = mapped_column(nullable=False, default=1)
     registered: Mapped[bool] = mapped_column(nullable=False, default=True)
-    reset_token: Mapped[Optional[str]]
+    reset_token: Mapped[Optional[str | None]]
 
     # Relationships
-    loan_out: Mapped[list["LoanOut"]] = relationship(back_populates='member')
-    contribution: Mapped[list["Contribution"]] = relationship(back_populates='member')
+    user_profile: Mapped["UserProfile"] = relationship(back_populates='user')
 
     def __init__(self, *args, **kwargs):
         """

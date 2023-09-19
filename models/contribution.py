@@ -13,12 +13,14 @@ class Contribution(BaseModel, Base):
     """table representing member's monthly contribution"""
     __tablename__ = "contributions"
     
-    member_id: Mapped[str] = mapped_column(ForeignKey('users.id'), nullable=False)
+    member_id: Mapped[str] = mapped_column(ForeignKey('users_profile.id'), nullable=False)
     amount: Mapped[Optional[float]] = mapped_column(nullable=True)
-    contribution_date: Mapped[datetime] = mapped_column(nullable=False)
+    date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.utcnow())
     advance_month: Mapped[int] = mapped_column(nullable=True, default=0)
+    slot: Mapped[int] = mapped_column(nullable=False, default=1)
 
-    member: Mapped[list["User"]] = relationship(back_populates='contribution')
+
+    user: Mapped[list["UserProfile"]] = relationship(back_populates='contributions')
 
     # Set the value of advance_month - (amount/slot)
 
