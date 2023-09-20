@@ -14,12 +14,6 @@ class User(BaseModel, Base):
     email: Mapped[str] = mapped_column(String(60), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(
         String(60), nullable=False)
-    first_name: Mapped[str] = mapped_column(String(60), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(60), nullable=False)
-    role: Mapped[str] = mapped_column(
-        String(60), nullable=False, default='member')
-    slot: Mapped[int] = mapped_column(nullable=False, default=1)
-    registered: Mapped[bool] = mapped_column(nullable=False, default=True)
     reset_token: Mapped[Optional[str | None]]
 
     # Relationships

@@ -84,3 +84,21 @@ class DB:
             all_obj = self.all(cls)
             return all_obj.get(dict_key)
         return None
+
+    def get_by_email(self, email: str) -> user.User:
+        """retrieve a user by their email"""
+        if email:
+            db_user = self.__session.query(DB.MODELS['User']).filter(
+                user.User.email == email).first()
+            return db_user
+        return None
+
+    def delete(self, obj=None):
+        """Delete an object from the current database session if not None"""
+        if obj:
+            self.__session.delete(obj)
+            self.save()
+
+    def count(self, cls=None) -> int:
+        """Return the count of all objects in storage"""
+        return (len(self.all(cls)))

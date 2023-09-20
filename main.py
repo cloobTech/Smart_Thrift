@@ -12,19 +12,14 @@ from models.interest import Interest
 # user_dict1 = {
 #     'email': 'cloobse@gmail.com',
 #     'password': '123456',
-#     'first_name': "Olamide",
-#     'last_name': 'Bello',
-#     'slot': 2,
-#     'registered': True,
+
 #     'reset_token': None
 # }
 
 # user_dict2 = {
 #     'email': 'belkid98@gmail.com',
 #     'password': '123456',
-#     'first_name': "Cloob",
-#     'last_name': 'Bello',
-#     'registered': True,
+
 #     'reset_token': None
 # }
 
@@ -36,13 +31,25 @@ from models.interest import Interest
 #     'amount': 10000,
 # }
 
+# # # Create their Profiles
+# user_pro1 = {
+#     'first_name': "Olamide",
+#     'last_name': 'Bello',
+#     'slot': 2,
+#     'registered': True,
+# }
+
+# user_pro2 = {
+#     'first_name': "Cloob",
+#     'last_name': 'Bello',
+#     'registered': True,
+# }
 # # Create User
 # user1 = User(**user_dict1)
-# user_profile1 = UserProfile(user=user1)
+# user_profile1 = UserProfile(**user_pro1, user=user1)
 # user2 = User(**user_dict2)
-# user_profile2 = UserProfile(user=user2)
+# user_profile2 = UserProfile(**user_pro2, user=user2)
 
-# # Create their Profiles
 
 # # Create Contribution
 # contribution1 = Contribution(**d_contri1)
@@ -60,9 +67,9 @@ from models.interest import Interest
 # models.storage.save()
 
 
-x = models.storage.all(UserProfile)
+x = models.storage.get_by_email('belkid98@gmail.com')
 print(x)
 
-x = models.storage.get(UserProfile, 'bf1a1c5d-ba1f-4cfe-9620-bca429eb43f2')
-print(x.contributions[0].to_dict())
+# x = models.storage.get(UserProfile, 'bf1a1c5d-ba1f-4cfe-9620-bca429eb43f2')
+# print(x.contributions[0].to_dict())
 # x = models.storage.get(UserProfile, 'fa2a936c-37f9-4e59-beef-96c71c6c3f9b')
