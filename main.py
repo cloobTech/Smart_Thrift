@@ -9,62 +9,64 @@ from models.loan_profile import LoanProfile
 from models.interest import Interest
 
 
-# user_dict1 = {
-#     'email': 'cloobse@gmail.com',
-#     'password': '123456',
+user_dict1 = {
+    'email': 'cloobse@gmail.com',
+    'password': '123456',
 
-#     'reset_token': None
-# }
+    'reset_token': None
+}
 
-# user_dict2 = {
-#     'email': 'belkid98@gmail.com',
-#     'password': '123456',
+user_dict2 = {
+    'email': 'belkid98@gmail.com',
+    'password': '123456',
 
-#     'reset_token': None
-# }
-
-
-# d_contri1 = {
-#     'amount': 20000,
-# }
-# d_contri2 = {
-#     'amount': 10000,
-# }
-
-# # # Create their Profiles
-# user_pro1 = {
-#     'first_name': "Olamide",
-#     'last_name': 'Bello',
-#     'slot': 2,
-#     'registered': True,
-# }
-
-# user_pro2 = {
-#     'first_name': "Cloob",
-#     'last_name': 'Bello',
-#     'registered': True,
-# }
-# # Create User
-# user1 = User(**user_dict1)
-# user_profile1 = UserProfile(**user_pro1, user=user1)
-# user2 = User(**user_dict2)
-# user_profile2 = UserProfile(**user_pro2, user=user2)
+    'reset_token': None
+}
 
 
-# # Create Contribution
-# contribution1 = Contribution(**d_contri1)
-# user_profile1.contributions.append(contribution1)
-# contribution2 = Contribution(**d_contri2)
-# user_profile2.contributions.append(contribution2)
+d_contri1 = {
+    'amount': 20000,
+}
+d_contri2 = {
+    'amount': 10000,
+}
 
-# # user_profile1.contribution.append(contribution1)
-# # user_profile1.contribution.append(contribution2)
+# # Create their Profiles
+user_pro1 = {
+    'first_name': "Olamide",
+    'last_name': 'Bello',
+    'slot': 2,
+    'registered': True,
+    'month_covered': 0
+}
 
-# models.storage.new(user1)
-# models.storage.new(user2)
-# models.storage.new(user_profile1)
-# models.storage.new(user_profile2)
-# models.storage.save()
+user_pro2 = {
+    'first_name': "Cloob",
+    'last_name': 'Bello',
+    'registered': True,
+    'month_covered': 0
+}
+# Create User
+user1 = User(**user_dict1)
+user_profile1 = UserProfile(**user_pro1, user=user1)
+user2 = User(**user_dict2)
+user_profile2 = UserProfile(**user_pro2, user=user2)
+
+
+# Create Contribution
+contribution1 = Contribution(**d_contri1)
+user_profile1.contributions.append(contribution1)
+contribution2 = Contribution(**d_contri2)
+user_profile2.contributions.append(contribution2)
+
+# user_profile1.contribution.append(contribution1)
+# user_profile1.contribution.append(contribution2)
+
+models.storage.new(user1)
+models.storage.new(user2)
+models.storage.new(user_profile1)
+models.storage.new(user_profile2)
+models.storage.save()
 
 
 x = models.storage.get_by_email('belkid98@gmail.com')

@@ -73,19 +73,19 @@ class BaseModel:
             returns a dictionary containing all keys/values of __dict__ of the instance
         """
         obj_class = self.__class__.__name__
-        dict = {}
+        dict_obj = {}
         for key, value in self.__dict__.items():
             if self.__is_serializable(value):
-                dict[key] = value
+                dict_obj[key] = value
             else:
-                dict[key] = str(value)  # convert to string
+                dict_obj[key] = str(value)  # convert to string
             if isinstance(value, datetime):
-                dict[key] = value.strftime(time_format)
-        dict["__class__"] = obj_class
-        dict.pop('_sa_instance_state', None)
+                dict_obj[key] = value.strftime(time_format)
+        dict_obj["__class__"] = obj_class
+        dict_obj.pop('_sa_instance_state', None)
         if obj_class == 'User':
-            dict.pop('password', None)
-        return dict
+            dict_obj.pop('password', None)
+        return dict_obj
 
     def save(self):
         """Add an object in the DB """
@@ -96,6 +96,22 @@ class BaseModel:
     def delete(self):
         """Delete an instance from the DB"""
         models.storage.delete(self)
+
+    def upadte(self, dict_obj: dict = None):
+        """Update a model"""
+        IGNORE = [
+            'id', 'created_at', 'updated_at', 'email',
+            'user_id', 'loan_id', 'guarantor_id', 'member_id'
+        ]
+        if dict_obj:
+            updated_dict = {
+                key: value for key, value in dict_obj.items() if key not in IGNORE
+            }
+            if '__class__' in updated_dict:
+                del updated_dict['__class__']
+            for key, value in updated_dict.items():
+                setattr(self, key, value)
+            self.save()
 
     def __str__(self) -> str:
         """ string representation of BaseModel """

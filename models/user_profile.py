@@ -16,13 +16,15 @@ class UserProfile(BaseModel, Base):
         String(60), nullable=False, default='member')
     slot: Mapped[int] = mapped_column(nullable=False, default=1)
     registered: Mapped[bool] = mapped_column(nullable=False, default=True)
+    month_covered: Mapped[int] = mapped_column(nullable=False, default=0)
     user_id: Mapped[str] = mapped_column(
         ForeignKey('users.id'), nullable=False)
+    
+    
     # Relationships
     user: Mapped["User"] = relationship(
         back_populates='user_profile', uselist=False)
-    contributions: Mapped[List["Contribution"]] = relationship(
-        back_populates='user')
+    contributions: Mapped[List["Contribution"]] = relationship(cascade='all, delete-orphan')
     loan: Mapped[List["Loan"]] = relationship(
         back_populates='user')
     loan_profile: Mapped[List["LoanProfile"]] = relationship(

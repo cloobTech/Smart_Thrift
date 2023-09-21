@@ -17,7 +17,7 @@ class User(BaseModel, Base):
     reset_token: Mapped[Optional[str | None]]
 
     # Relationships
-    user_profile: Mapped["UserProfile"] = relationship(back_populates='user')
+    user_profile: Mapped["UserProfile"] = relationship(back_populates='user', cascade='all, delete-orphan')
 
     def __init__(self, *args, **kwargs):
         """

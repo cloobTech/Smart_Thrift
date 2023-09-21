@@ -1,11 +1,12 @@
 from fastapi import FastAPI, APIRouter, Depends
 from typing import Union
-from .routes import user, user_profile
+from .routes import user, user_profile, contribution
 
 app = FastAPI()
 
 app.include_router(user.router)
 app.include_router(user_profile.router)
+app.include_router(contribution.router)
 
 
 
