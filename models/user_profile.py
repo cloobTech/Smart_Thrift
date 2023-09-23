@@ -19,14 +19,13 @@ class UserProfile(BaseModel, Base):
     month_covered: Mapped[int] = mapped_column(nullable=False, default=0)
     user_id: Mapped[str] = mapped_column(
         ForeignKey('users.id'), nullable=False)
-    
-    
+
     # Relationships
     user: Mapped["User"] = relationship(
         back_populates='user_profile', uselist=False)
-    contributions: Mapped[List["Contribution"]] = relationship(cascade='all, delete-orphan')
-    loan: Mapped[List["Loan"]] = relationship(
-        back_populates='user')
+    contributions: Mapped[List["Contribution"]] = relationship(
+        cascade='all, delete-orphan')
+    loan: Mapped[List["Loan"]] = relationship(cascade='all, delete-orphan')
     loan_profile: Mapped[List["LoanProfile"]] = relationship(
         back_populates='user')
     loan_refund: Mapped[List["LoanRefund"]] = relationship(

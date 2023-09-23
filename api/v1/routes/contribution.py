@@ -14,10 +14,8 @@ def get_users(storage: Session = Depends(get_db)) -> list[dict | None]:
     contributions: list = []
     all_contributions: dict = storage.all(Contribution)
     if not all_contributions:
-        return contribution
-    for key in all_contributions.keys():
-        contribution = (all_contributions[key].to_dict())
-        contributions.append(contribution)
+        return contributions
+    contributions = [all_contributions[key].to_dict() for key in all_contributions]
     return (contributions)
 
 
@@ -42,7 +40,7 @@ def create_contribution(data: ContributionSchema, storage: Session = Depends(get
     contribution_data = data_dict['contribution_data']
 
     user = storage.get(UserProfile, profile_id)
-    if not user:
+    if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User profile not found")
 
@@ -50,8 +48,8 @@ def create_contribution(data: ContributionSchema, storage: Session = Depends(get
     contribution = Contribution(**contribution_data)
 
     # Calculate a user's contribution and determine advance payment
-    user_dict = user.to_dict()
-    contribution_dict = contribution.to_dict()
+    user_dict: dict = user.to_dict()
+    contribution_dict: dict = contribution.to_dict()
     amount = contribution_dict.get('amount', 0)
     slot = user_dict.get('slot', 1)
     month_covered = user_dict.get('month_covered')
@@ -61,7 +59,7 @@ def create_contribution(data: ContributionSchema, storage: Session = Depends(get
 
     # update DB
     try:
-        user.upadte(user_dict)
+        user.update(user_dict)
         user.contributions.append(contribution)
         contribution.save()
         return {"message": "Transaction Successful"}
@@ -112,7 +110,7 @@ def delete_contribution(data: DeleteContr, storage: Session = Depends(get_db)) -
 
     try:
         # update DB
-        user.upadte(user_dict)
+        user.update(user_dict)
         contribution.delete()
     except TypeError:
         raise HTTPException(
@@ -155,8 +153,8 @@ def update_contribution(id: str, data: UpdateContr, storage: Session = Depends(g
     _month_covered = int(new_amount/total_sub) + month_covered
     user_dict['month_covered'] = _month_covered
 
-    user.upadte(user_dict)
-    contribution.upadte(contribution_data)
+    user.update(user_dict)
+    contribution.update(contribution_data)
 
     return {}
     # Why I'm not using url parameters - (see the delete function)

@@ -5,7 +5,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
-from models import user, user_profile, contribution, loan, loan_profile, loan_refund, interest
+from models import user, user_profile, contribution, loan, loan_out, loan_profile, loan_refund, interest
 
 
 class DB:
@@ -16,9 +16,10 @@ class DB:
         'UserProfile': user_profile.UserProfile,
         'Contribution': contribution.Contribution,
         'Loan': loan.Loan,
+        'LoanOut': loan_out.LoanOut,
         'LoanProfile': loan_profile.LoanProfile,
         'LoanRefund': loan_refund.LoanRefund,
-        'Interest': interest.Interest
+        'Interest': interest.Interest,
     }
 
     __engine = None

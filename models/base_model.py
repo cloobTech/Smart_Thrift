@@ -97,7 +97,7 @@ class BaseModel:
         """Delete an instance from the DB"""
         models.storage.delete(self)
 
-    def upadte(self, dict_obj: dict = None):
+    def update(self, dict_obj: dict = None):
         """Update a model"""
         IGNORE = [
             'id', 'created_at', 'updated_at', 'email',

@@ -15,9 +15,7 @@ def get_users(storage: Session = Depends(get_db)) -> list[dict | None]:
     all_users: dict = storage.all(User)
     if not all_users:
         return users
-    for key in all_users.keys():
-        user = (all_users[key].to_dict())
-        users.append(user)
+    users = [all_users[key].to_dict() for key in all_users]
     return (users)
 
 
