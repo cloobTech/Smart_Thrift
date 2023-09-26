@@ -62,7 +62,7 @@ def create_contribution(data: ContributionSchema, storage: Session = Depends(get
         user.update(user_dict)
         user.contributions.append(contribution)
         contribution.save()
-        return {"message": "Transaction Successful"}
+        return {"message": f"Transaction Successful {x}"}
     except TypeError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Bad Request')
