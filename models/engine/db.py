@@ -50,6 +50,14 @@ class DB:
             )
         )
 
+    def shutdown_db(self):
+        """Close current DB session"""
+        self.__session.remove()
+
+    def rollback(self):
+        """Roll back current DB session"""
+        self.__session.rollback()
+
     def all(self, cls=None) -> dict:
         """ returns a dictionary of all objects"""
         dict_obj = {}

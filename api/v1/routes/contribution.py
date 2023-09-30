@@ -157,4 +157,3 @@ def update_contribution(id: str, data: UpdateContr, storage: Session = Depends(g
     contribution.update(contribution_data)
 
     return {}
-    # Why I'm not using url parameters - (see the delete function)

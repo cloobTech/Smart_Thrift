@@ -1,8 +1,17 @@
+"""
+This module handles:
+- Getting individual loan
+- Deleting and Updating Loan
+- By Extension, Updating parent Loan
+
+"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from ..utils import get_db
 from models.loan import Loan
+from models.loan_profile import LoanProfile
 from models.loan_out import LoanOut
 from sqlalchemy.orm import Session
+from schemas.loan import LoanOutUpdate
 
 
 router = APIRouter(tags=['LoanOut'], prefix='/loan_out')
@@ -63,10 +72,6 @@ def delete_loan(id: str, loan_id: dict, storage: Session = Depends(get_db)) -> N
 
 
 @router.put('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def update_loan(id: str, data: dict, storage: Session = Depends(get_db)):
-    """Update a loan instance"""
-
-
 def update_loanout(id: str, data: dict, storage: Session = Depends(get_db)):
     """Update a loan instance"""
     if len(data) < 1:
@@ -75,26 +80,28 @@ def update_loanout(id: str, data: dict, storage: Session = Depends(get_db)):
             detail='request data is empty'
         )
 
+    # data = data.model_dump()
+
     loanout_data: dict = data['loanout_data']
     loan_out = storage.get(LoanOut, id)
+
+    if loan_out is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Loan instance not found")
+    loanout_dict: dict = loan_out.to_dict()
 
     # I only want to update the Parent Loan if it is "amount" that's
     # been updated
     if 'amount' in loanout_data:
-        parent_id: dict = data['parent_id']
-        loan_id = parent_id.get('loan_id')
+        parent_ids: dict = data['parent_ids']
+        loan_id = parent_ids.get('loan_id')
+        loan_profile_id = parent_ids.get('loan_profile_id')
         loan = storage.get(Loan, loan_id)
 
         if loan is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Aggregate Loan instance not found")
         loan_dict: dict = loan.to_dict()
-
-    if loan_out is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Loan instance not found")
-
-    loanout_dict: dict = loan_out.to_dict()
 
     if 'amount' in loanout_data:
         if loan_id != loanout_dict['loan_id']:
@@ -104,6 +111,32 @@ def update_loanout(id: str, data: dict, storage: Session = Depends(get_db)):
         total_amount += loanout_data['amount']
         loan_dict['total_amount'] = total_amount
         loan.update(loan_dict)
+
+        # Get exiting loan_profile and update it
+        loan_profile = storage.get(LoanProfile, loan_profile_id)
+        if loan_profile is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Loan Profile instance not found")
+
+        if loan_dict['is_member']:  # Interest rate on loans
+            RATE = 0.05
+        else:
+            RATE = 0.1
+
+        loan_profile_data = {}
+        loan_profile_data['principal'] = loan_dict['total_amount']
+        loan_profile_data['interest'] = loan_dict['total_amount'] * RATE
+        loan_profile_data['total'] = loan_dict['total_amount'] + \
+            loan_profile_data['interest']
+
+        print(loan_profile.to_dict()['loan_id'])
+        print(loan_dict['id'])
+        if loan_profile.to_dict()['loan_id'] != loan_dict['id']:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                detail="Cannot attach <Loan Profile Instance> to <Loan Instance>")
+
+        loan_profile.update(loan_profile_data)
+        loan_profile.save()
 
     loan_out.update(loanout_data)
 

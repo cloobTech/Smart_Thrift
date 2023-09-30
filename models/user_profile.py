@@ -26,9 +26,5 @@ class UserProfile(BaseModel, Base):
     contributions: Mapped[List["Contribution"]] = relationship(
         cascade='all, delete-orphan')
     loan: Mapped[List["Loan"]] = relationship(cascade='all, delete-orphan')
-    loan_profile: Mapped[List["LoanProfile"]] = relationship(
-        back_populates='user')
-    loan_refund: Mapped[List["LoanRefund"]] = relationship(
-        back_populates='user')
     interest: Mapped[List["Interest"]] = relationship(
-        back_populates='user')
+        back_populates='user', cascade='all, delete-orphan')

@@ -1,4 +1,10 @@
 from models import storage
 
+
 def get_db():
-    return storage
+    try:
+        yield storage
+    except Exception:
+        storage.rollback()
+    finally:
+        storage.shutdown_db()

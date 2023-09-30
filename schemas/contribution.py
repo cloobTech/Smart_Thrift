@@ -25,3 +25,6 @@ class Amount(BaseModel):
 class UpdateContr(BaseModel):
     profile_id: str
     contribution_data: Amount
+
+    class configure:
+        allow_extra = False

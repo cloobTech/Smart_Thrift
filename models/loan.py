@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-"""Module for loan related activities"""
+"""
+Module for loan related activities
+- creating loan profile
+- creating loan_out profile
+"""
 from datetime import datetime
 from models.base_model import BaseModel, Base
 from sqlalchemy import String, ForeignKey
@@ -19,13 +23,15 @@ class Loan(BaseModel, Base):
     total_amount: Mapped[float] = mapped_column(nullable=False, default=0)
     guarantor_id: Mapped[str] = mapped_column(
         ForeignKey('users_profile.id'), nullable=False)
-    
+
     # Relationship
-    loan_out: Mapped[List['LoanOut']] = relationship(cascade="all, delete-orphan")
+    loan_out: Mapped[List['LoanOut']] = relationship(
+        cascade="all, delete-orphan")
     loan_profile: Mapped["LoanProfile"] = relationship(
-        back_populates="loan")
-    interest: Mapped["Interest"] = relationship(
-        back_populates="loan")
+        cascade="all, delete-orphan")
+    loan_refund: Mapped[List['LoanRefund']] = relationship(
+        cascade="all, delete-orphan")
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
