@@ -38,7 +38,7 @@ class DB:
             )
         else:
             self.__engine = create_engine("sqlite:///std.db", echo=False)
-            # Base.metadata.drop_all(self.__engine)
+            Base.metadata.drop_all(self.__engine)
 
     def reload(self):
         """create all tables in database & session from the engine"""
@@ -77,6 +77,48 @@ class DB:
                 obj_ref = f'{type(obj).__name__}.{obj.id}'
                 dict_obj[obj_ref] = obj
         return dict_obj
+
+    def get_by_attribute(self, cls, attribute_name, attribute_value):
+        """Retrieve an object based on a class name and an attribute's value"""
+        if cls and attribute_name and attribute_value:
+            try:
+                query = self.__session.query(cls).filter(
+                    getattr(cls, attribute_name) == attribute_value)
+                return query.first()
+            except Exception:
+                raise ValueError(
+                    'Incorrect Class Model or Attribute Name Passed')
+
+        return None
+
+    def paginate(self, cls, page, page_size, search_column: str | None = None, search_query: str | None = None):
+        """Custom Pagination + search params"""
+        dict_obj = {}
+        total_items = self.count(cls)
+        total_pages = (total_items - 1) // page_size + 1
+        page = (page - 1) * page_size
+
+        if cls is not None:
+            try:
+                query = self.__session.query(
+                    cls)
+
+                # Apply search params if any
+                if search_column and search_query:
+                    search_column = getattr(cls, search_column)
+                    query = query.filter(
+                        search_column.like(f"%{search_query}%"))
+                    # Reset Total items if a search is passed
+                    total_items = len(query.all())
+                    total_pages = (total_items - 1) // page_size + 1
+
+                query = query.limit(page_size).offset(page).all()
+                for obj in query:
+                    obj_ref = f'{type(obj).__name__}.{obj.id}'
+                    dict_obj[obj_ref] = obj
+                return dict_obj, total_pages, total_items
+            except Exception:
+                raise ValueError('Incorrect Class Model Passed')
 
     def new(self, obj):
         """add objects to current database session"""

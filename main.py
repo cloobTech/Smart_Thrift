@@ -12,14 +12,12 @@ from models.interest import Interest
 user_dict1 = {
     'email': 'cloobse@gmail.com',
     'password': '123456',
-
     'reset_token': None
 }
 
 user_dict2 = {
     'email': 'belkid98@gmail.com',
     'password': '123456',
-
     'reset_token': None
 }
 

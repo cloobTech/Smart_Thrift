@@ -1,22 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from ..utils import get_db
+from ..utils import get_db, hyper_media_pagination
 from models.user import User
 from models.user_profile import UserProfile
 from sqlalchemy.orm import Session
 from schemas.user import CreateUser as CreateUserSchema
+from typing import Any
 
 router = APIRouter(tags=['Users'], prefix='/users')
 
 
 @router.get('/')
-def get_users(storage: Session = Depends(get_db)) -> list[dict | None]:
+def get_users(storage: Session = Depends(get_db)) -> dict[str, Any]:
     """Return all users instances as a list of dictionary from the database"""
     users: list = []
-    all_users: dict = storage.all(User)
+    all_users = hyper_media_pagination(User)
     if not all_users:
         return users
-    users = [all_users[key].to_dict() for key in all_users]
-    return (users)
+    return all_users
 
 
 @router.get('/{id}')
@@ -48,12 +48,3 @@ def create_user(user_details: CreateUserSchema, storage: Session = Depends(get_d
     user_profile.save()
     return {"message": "User successfully created"}
 
-
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(id: str, storage: Session = Depends(get_db)) -> None:
-    """Delete a user"""
-    user: dict = storage.get(User, id)
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-    user.delete()
