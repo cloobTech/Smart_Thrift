@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status
 from ..utils import get_db, hyper_media_pagination
 from models.user_profile import UserProfile
 from sqlalchemy.orm import Session

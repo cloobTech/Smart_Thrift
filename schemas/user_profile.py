@@ -10,7 +10,6 @@ class UserProfile(BaseModel):
     slot: int = 1
     registered: bool = False
     month_covered: int = 0
-    id: str
 
 
 class UserProfileOut(UserProfile):

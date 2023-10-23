@@ -2,8 +2,8 @@
 "Database Engine"
 
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine, select, exists
+from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 from models.base_model import Base
 from models import user, user_profile, contribution, loan, loan_out, loan_profile, loan_refund, interest
 
@@ -38,7 +38,7 @@ class DB:
             )
         else:
             self.__engine = create_engine("sqlite:///std.db", echo=False)
-            Base.metadata.drop_all(self.__engine)
+            # Base.metadata.drop_all(self.__engine)
 
     def reload(self):
         """create all tables in database & session from the engine"""
@@ -105,9 +105,21 @@ class DB:
 
                 # Apply search params if any
                 if search_column and search_query:
-                    search_column = getattr(cls, search_column)
-                    query = query.filter(
-                        search_column.like(f"%{search_query}%"))
+                    # Searches when classes dont have the attribute first or last name
+                    if cls != DB.MODELS['UserProfile']:
+                        user_cls = cls.user.property.mapper.class_
+
+                        query = query.join(user_cls)
+                        query = query.filter(
+                            user_cls.last_name.like(f"%{search_query}%"))
+
+                        # subquery = select(user_cls.id).where(
+                        #     user_cls.last_name.like(f"%{search_query}%"))
+                        # query = query.filter(exists(subquery))
+                    else:
+                        search_column = getattr(cls, search_column)
+                        query = query.filter(
+                            search_column.like(f"%{search_query}%"))
                     # Reset Total items if a search is passed
                     total_items = len(query.all())
                     total_pages = (total_items - 1) // page_size + 1

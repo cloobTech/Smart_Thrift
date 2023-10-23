@@ -10,7 +10,7 @@ from models.interest import Interest
 
 
 user_dict1 = {
-    'email': 'cloobse@gmail.com',
+    'email': 'cloobtechse@gmail.com',
     'password': '123456',
     'reset_token': None
 }
@@ -35,14 +35,16 @@ user_pro1 = {
     'last_name': 'Bello',
     'slot': 2,
     'registered': True,
-    'month_covered': 0
+    'month_covered': 0,
+    'role': "admin"
 }
 
 user_pro2 = {
     'first_name': "Cloob",
     'last_name': 'Bello',
     'registered': True,
-    'month_covered': 0
+    'month_covered': 0,
+    'role': "admin"
 }
 # Create User
 user1 = User(**user_dict1)

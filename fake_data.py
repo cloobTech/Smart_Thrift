@@ -30,7 +30,7 @@ def generate_user_profile():
         'last_name': fake.last_name(),
         'slot': random.randint(1, 4),
         'registered': fake.boolean(),
-        'month_covered': random.randint(0, 2)
+        'month_covered': 0
     }
     return user_profile
 
@@ -41,7 +41,7 @@ user_instances = []
 # Contribution
 def generate_contribution():
     contribution = {
-        "amount": 10000
+        "amount": 60000
     }
 
     return contribution
@@ -58,6 +58,8 @@ contribution = [generate_contribution() for _ in range(50)]
 
 for user_dict, user_profile_dict, contribution in zip(users, user_profiles, contribution):
     # Create User instance
+    user_profile_dict['month_covered'] = int(
+        contribution['amount']/(user_profile_dict['slot'] * 10000))
     user = User(**user_dict)
     contribution = Contribution(**contribution)
 

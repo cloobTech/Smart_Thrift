@@ -1,22 +1,30 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from ..utils import get_db
+from ..utils import get_db, hyper_media_pagination
 from models.contribution import Contribution
 from models.user_profile import UserProfile
+from models.auth.auth import Auth
 from sqlalchemy.orm import Session
+from typing import Any
 from schemas.contribution import ContributionSchema, DeleteContr, UpdateContr
+
+
+AUTH = Auth()
 
 router = APIRouter(tags=['Contribution'], prefix='/contributions')
 
 
 @router.get('/')
-def get_users(storage: Session = Depends(get_db)) -> list[dict | None]:
+def get_users(page: int = 1, page_size: int = 7,  column: str | None = None, search_string: str | None = None,  current_user: UserProfile = Depends(AUTH.get_current_user)) -> dict[str, Any]:
     """Return all user contribution instances as a list of dictionary from the database"""
+    if current_user.role != 'admin' and current_user.role != 'owner':
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized Access")
     contributions: list = []
-    all_contributions: dict = storage.all(Contribution)
+    all_contributions: dict = hyper_media_pagination(
+        Contribution, page=page, page_size=page_size, column=column, search=search_string)
     if not all_contributions:
         return contributions
-    contributions = [all_contributions[key].to_dict() for key in all_contributions]
-    return (contributions)
+    return all_contributions
 
 
 @router.get('/{id}')
@@ -26,7 +34,6 @@ def get_user(id: str, storage: Session = Depends(get_db)) -> dict:
     if contribution is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Contribution instance not found")
-    contribution = contribution.to_dict()
     return contribution
 
 
@@ -62,7 +69,7 @@ def create_contribution(data: ContributionSchema, storage: Session = Depends(get
         user.update(user_dict)
         user.contributions.append(contribution)
         contribution.save()
-        return {"message": f"Transaction Successful {x}"}
+        return {"message": f"Transaction Successful"}
     except TypeError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Bad Request')

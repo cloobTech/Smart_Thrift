@@ -14,6 +14,8 @@ def get_db():
 
 def hyper_media_pagination(cls, page=1, page_size=7, column: str | None = None, search: str | None = None):
     """Formatted Pagination"""
+    # if cls == models.user_profile.UserProfile:
+
     dict_obj, total_pages, total_items = storage.paginate(
         cls, page, page_size, search_column=column, search_query=search)
     prev = page - 1 if page > 1 else None
@@ -26,7 +28,17 @@ def hyper_media_pagination(cls, page=1, page_size=7, column: str | None = None, 
             obj_dict = obj.to_dict()
             obj_dict['email'] = obj.user.email
             data.append(obj_dict)
+    elif cls == models.contribution.Contribution:
+        for key in dict_obj.keys():
+            obj = dict_obj[key]
+            obj_dict = obj.to_dict()
+            obj_dict['first_name'] = obj.user.first_name
+            obj_dict['last_name'] = obj.user.last_name
+            obj_dict['month_covered'] = obj.user.month_covered
+            obj_dict['slot'] = obj.user.slot
+            data.append(obj_dict)
 
+    # print(len(data))
 
     return {
         # "data": [dict_obj[key].to_dict() for key in dict_obj.keys()],

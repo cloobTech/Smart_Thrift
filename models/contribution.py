@@ -3,7 +3,7 @@
 from datetime import datetime
 from models.base_model import BaseModel, Base
 from models.base_model import BaseModel, Base
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import  ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import  Optional
 
@@ -18,7 +18,7 @@ class Contribution(BaseModel, Base):
     date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.utcnow())
 
 
-    # user: Mapped[list["UserProfile"]] = relationship(back_populates='contributions')
+    user: Mapped[list["UserProfile"]] = relationship(back_populates='contributions')
 
     # write a logic to accept contributions in multiple of 10K
 
