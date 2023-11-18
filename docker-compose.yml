@@ -1,0 +1,42 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart_thrift
+    ports:
+      - '8000:8000'
+    environment:
+      - ST_DB_HOST=mysql-db
+      - ST_DB_PORT=3307
+      - ST_DB_USER=smart_thrift_db
+      - ST_DB_PWD=smart_thrift_pwd
+      - ST_DB_USERNAME=root
+    depends_on:
+      - mysql-db
+    networks:
+      - fastapi_network
+
+  mysql-db:
+    image: mysql:latest
+    restart: always
+    container_name: mysql_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=smart_thrift_pwd
+      - MYSQL_DATABASE=smart_thrift_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=smart_thrift_pwd
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - fastapi_network
+
+volumes:
+  mysql-data:
+
+networks:
+  fastapi_network:
+    external: true

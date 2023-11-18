@@ -12,12 +12,12 @@ def get_db():
         storage.shutdown_db()
 
 
-def hyper_media_pagination(cls, page=1, page_size=7, column: str | None = None, search: str | None = None):
+def hyper_media_pagination(cls, page=1, page_size=7, column: str | None = None, search: str | None = None, filter_column: str | None = None, filter_query: int | None = None):
     """Formatted Pagination"""
     # if cls == models.user_profile.UserProfile:
 
     dict_obj, total_pages, total_items = storage.paginate(
-        cls, page, page_size, search_column=column, search_query=search)
+        cls, page, page_size, search_column=column, search_query=search, filter_column=filter_column, filter_query=filter_query)
     prev = page - 1 if page > 1 else None
     next = page + 1 if page < total_pages else None
 
@@ -37,8 +37,11 @@ def hyper_media_pagination(cls, page=1, page_size=7, column: str | None = None, 
             obj_dict['month_covered'] = obj.user.month_covered
             obj_dict['slot'] = obj.user.slot
             data.append(obj_dict)
+    else:
+        for key in dict_obj.keys():
+            obj = dict_obj[key]
+            data.append(obj.to_dict())
 
-    # print(len(data))
 
     return {
         # "data": [dict_obj[key].to_dict() for key in dict_obj.keys()],

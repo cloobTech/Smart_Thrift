@@ -3,13 +3,12 @@
     Module to handle all forms of user authentication and authorization
 """
 import bcrypt
+import logging
 from datetime import datetime, timedelta
 import models
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from models.engine import db
-from models.user import User
 from models.user_profile import UserProfile
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
@@ -48,7 +47,7 @@ class Auth:
             user = models.storage.get_by_email(email)
             if not user:
                 raise NoResultFound("User Not Found!")
-            hashed_pwd = user.password
+            hashed_pwd = user.password.encode('utf-8')
             if bcrypt.checkpw(password.encode('utf-8'), hashed_pwd):
 
                 # Creat a Jwt Token if user and password is correct

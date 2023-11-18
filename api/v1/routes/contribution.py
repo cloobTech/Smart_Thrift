@@ -14,14 +14,14 @@ router = APIRouter(tags=['Contribution'], prefix='/contributions')
 
 
 @router.get('/')
-def get_users(page: int = 1, page_size: int = 7,  column: str | None = None, search_string: str | None = None,  current_user: UserProfile = Depends(AUTH.get_current_user)) -> dict[str, Any]:
+def get_users(page: int = 1, page_size: int = 7,  column: str | None = None, search_string: str | None = None, filter_column: str | None = 'date', filter_query: int | None = None,  current_user: UserProfile = Depends(AUTH.get_current_user)) -> dict[str, Any]:
     """Return all user contribution instances as a list of dictionary from the database"""
     if current_user.role != 'admin' and current_user.role != 'owner':
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized Access")
     contributions: list = []
     all_contributions: dict = hyper_media_pagination(
-        Contribution, page=page, page_size=page_size, column=column, search=search_string)
+        Contribution, page=page, page_size=page_size, column=column, search=search_string, filter_column=filter_column, filter_query=filter_query)
     if not all_contributions:
         return contributions
     return all_contributions

@@ -14,7 +14,7 @@ class User(BaseModel, Base):
     email: Mapped[str] = mapped_column(String(60), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(
         String(60), nullable=False)
-    reset_token: Mapped[Optional[str | None]]
+    reset_token: Mapped[Optional[str | None]] = mapped_column(String(60), nullable=True)   
 
     # Relationships
     user_profile: Mapped["UserProfile"] = relationship(back_populates='user', cascade='all, delete-orphan')

@@ -2,8 +2,11 @@
 "Database Engine"
 
 import os
-from sqlalchemy import create_engine, select, exists
-from sqlalchemy.orm import sessionmaker, scoped_session, aliased
+import logging
+from config import settings
+from datetime import datetime
+from sqlalchemy import create_engine, extract
+from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
 from models import user, user_profile, contribution, loan, loan_out, loan_profile, loan_refund, interest
 
@@ -27,18 +30,28 @@ class DB:
 
     def __init__(self) -> None:
         """Create the engine -- self.__engine"""
-        if os.environ.get('ST_ENV') == 'DEV':
-            self.__engine = create_engine(
-                'mysql+mysqldb://{}:{}@{}/{}'.format(
-                    os.environ.get('ST_USER'),
-                    os.environ.get('ST_PWD'),
-                    os.environ.get('ST_HOST'),
-                    os.environ.get('ST_DB'),
+        try:
+            if settings.DEV_ENV == 'development':
+                self.__engine = create_engine(
+                     f'mysql+pymysql://{settings.ST_DB_USERNAME}:{settings.ST_DB_PWD}@{settings.ST_DB_HOST}/{settings.ST_DB_NAME}'
+
+                )
+                logging.info("Database connected.")
+            else:
+                self.__engine = create_engine("sqlite:///std.db", echo=False)
+                logging.info("Database (Lite) connected.")
+                # Base.metadata.drop_all(self.__engine)
+
+            # Initialize the scoped session
+            self.__session = scoped_session(
+                sessionmaker(
+                    bind=self.__engine,
+                    expire_on_commit=False
                 )
             )
-        else:
-            self.__engine = create_engine("sqlite:///std.db", echo=False)
-            # Base.metadata.drop_all(self.__engine)
+
+        except Exception as e:
+            logging.error(f"Failed to connect to the database: {e}")
 
     def reload(self):
         """create all tables in database & session from the engine"""
@@ -91,7 +104,7 @@ class DB:
 
         return None
 
-    def paginate(self, cls, page, page_size, search_column: str | None = None, search_query: str | None = None):
+    def paginate(self, cls, page, page_size, search_column: str | None = None, search_query: str | None = None, filter_column: str | None = None, filter_query: int | None = None):
         """Custom Pagination + search params"""
         dict_obj = {}
         total_items = self.count(cls)
@@ -102,6 +115,20 @@ class DB:
             try:
                 query = self.__session.query(
                     cls)
+
+                # Apply Filter
+                if filter_column and filter_query:
+                    filter_column = getattr(cls, filter_column)
+                    if isinstance(filter_column, datetime):
+                        print("DATE")
+                    else:
+                        print("NOT DATE")
+                    query = query.filter(
+                        extract(
+                            'month', filter_column
+                        ) == filter_query
+
+                    )
 
                 # Apply search params if any
                 if search_column and search_query:
